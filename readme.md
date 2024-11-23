@@ -5,6 +5,10 @@
 - Cleans up ATA for tokenIn after swap.
 - Does not clean up nor compress tokenOut.
 
+### Notes
+
+- This does not have internal access to Jup's API, so there's some overhead that forces us to set: directSwapsOnly=true to not occasionally overrun Solana's tx size limit. Integrating natively in Jup's API should help fix this. Baseline additional size overhead is roughly ~300 bytes.
+
 ### Setup
 
 1. Create .env from .env.example
