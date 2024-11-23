@@ -1,0 +1,37 @@
+{
+  "name": "jup-swap",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "light protocol maintainers",
+  "license": "MIT",
+  "type": "module",
+  "resolutions": {
+    "@solana/spl-token": "0.4.0"
+  },
+  "dependencies": {
+    "@jup-ag/api": "^6.0.30",
+    "@lightprotocol/compressed-token": "^0.15.1",
+    "@lightprotocol/stateless.js": "^0.15.1",
+    "@solana/web3.js": "1.95.5",
+    "@solana/spl-token": "0.4.0",
+    "@types/node": "^22.9.2",
+    "bs58": "^6.0.0",
+    "promise-retry": "^2.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "@types/promise-retry": "^1.1.6",
+    "@solana/spl-token": "0.4.0"
+  },
+  "scripts": {
+    "dev": "NODE_OPTIONS='--no-warnings --no-deprecation' tsx watch src/index.ts",
+    "dryrun": "tsx src/index.ts dryrun true",
+    "dryrun-skip-logs": "tsx src/index.ts dryrun false",
+    "send": "tsx src/index.ts send true",
+    "debug": "NODE_DEBUG=* node --trace-warnings --trace-deprecation --trace-uncaught node_modules/.bin/tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  }
+}
