@@ -26,7 +26,7 @@ import {
   defaultTestStateTreeAccounts,
   Rpc,
 } from "@lightprotocol/stateless.js";
-import { lightLut, swapConfig } from "./constants.ts";
+import { lightLut, swapConfig, swapRequestConfig } from "./constants.ts";
 import { logEnd, logToFile } from "./logger.ts";
 
 const jupiterApi = createJupiterApiClient();
@@ -67,9 +67,9 @@ const getAddressLookupTableAccounts = async (
 };
 
 const getQuote = async (
-  inputMint: PublicKey,
-  outputMint: PublicKey,
-  amount: number,
+  inputMint: PublicKey, // allows override
+  outputMint: PublicKey, // allows override
+  amount: number, // allows override
   debug: boolean
 ) => {
   const quoteGetRequest: QuoteGetRequest = {
@@ -90,12 +90,9 @@ const getSwapInstructions = async (
   quoteResponse: QuoteResponse
 ) => {
   const swapRequest: SwapRequest = {
+    ...swapRequestConfig,
     userPublicKey: swapUserPubkey.toBase58(),
     quoteResponse,
-    skipUserAccountsRpcCalls: false,
-    dynamicComputeUnitLimit: true,
-    wrapAndUnwrapSol: true,
-    prioritizationFeeLamports: 40_000,
   };
 
   const instructions = await jupiterApi.swapInstructionsPost({ swapRequest });

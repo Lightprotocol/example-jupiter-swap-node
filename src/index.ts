@@ -13,14 +13,15 @@ import { compressTokenAndCleanupAtaSetup } from "./setup.ts";
 import { logToFile } from "./logger.ts";
 import { handleSend } from "./handleSend.ts";
 type Flow = "dryrun" | "send";
-let ROUNDS = 5;
+let ROUNDS = parseInt(process.env.ROUNDS || "1");
 
 async function main(flow: Flow = "dryrun", debug: boolean = true) {
   console.log("Compressed Jupiter swap started");
   console.log(`Flow: ${flow}, Debug: ${debug}, Total rounds: ${ROUNDS}`);
 
-  if (debug) console.log("Storing debug info in swap.log");
+  const totalRounds = ROUNDS;
   while (ROUNDS > 0) {
+    console.log(`Running round ${totalRounds - ROUNDS + 1}/${totalRounds}`);
     ROUNDS--;
     try {
       const connection = new Rpc(rpcUrl, compressionUrl, compressionUrl);
