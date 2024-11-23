@@ -30,7 +30,10 @@ export async function compressTokenAndCleanupAtaSetup(
       console.log("compressTxId", compressTxId, cleanupALlAmount.value.amount);
     }
   } catch (e) {
-    console.log("ata not found or compression sfailed", e);
+    console.log(
+      "compressTokenAndCleanupAtaSetup: ata not found or compression failed: ",
+      e
+    );
   }
 
   // check that balance is 0
