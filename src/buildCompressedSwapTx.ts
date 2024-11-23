@@ -204,10 +204,12 @@ export async function buildCompressedSwapTx(
     logToFile(
       `${i}. ${ix.programId.toString()}: ${ix.data.length} bytes, ${
         ix.keys.length
-      } accounts`
+      } accounts`,
+      debug
     );
     logToFile(
-      `Account indices: ${ix.keys.map((k) => k.pubkey.toString()).join(", ")}`
+      `Account indices: ${ix.keys.map((k) => k.pubkey.toString()).join(", ")}`,
+      debug
     );
   });
 
@@ -220,7 +222,10 @@ export async function buildCompressedSwapTx(
   }).compileToV0Message(addressLookupTableAccounts);
   const transaction = new VersionedTransaction(messageV0);
   try {
-    logToFile(`Transaction size (bytes): ${transaction.serialize().length}`);
+    logToFile(
+      `Transaction size (bytes): ${transaction.serialize().length}`,
+      debug
+    );
     logToFile(`transaction ${JSON.stringify(transaction, null)}`, debug);
     logEnd(debug);
     return transaction;

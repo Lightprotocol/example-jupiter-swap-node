@@ -5,9 +5,6 @@
   "author": "light protocol maintainers",
   "license": "MIT",
   "type": "module",
-  "resolutions": {
-    "@solana/spl-token": "0.4.0"
-  },
   "dependencies": {
     "@jup-ag/api": "^6.0.30",
     "@lightprotocol/compressed-token": "^0.15.1",
