@@ -10,7 +10,7 @@
 -   Demo requires `directSwapsOnly=true` to avoid occasional tx size overrun (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
 
 -   Further optimization paths:
-    -   Add `compressTokenOut` option. Requires invocation via CPI.
+    -   Add `compressTokenOut` option. Requires invocation via CPI to get `exactOut`.
     -   Enable use of `sharedTokenAccounts` to avoid opening and closing ATAs for tokenIn/tokenOut.
 
 ### Setup
