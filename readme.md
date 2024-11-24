@@ -7,7 +7,7 @@
 
 ### Notes
 
--   Requires directSwapsOnly=true to avoid occasional tx size overrun (+ ~300 bytes overhead). This should be fixable by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
+-   Demo requires `directSwapsOnly=true` to avoid occasional tx size overrun (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
 
 -   Further optimization paths:
     -   Add `compressTokenOut` option. Requires invocation via CPI.
