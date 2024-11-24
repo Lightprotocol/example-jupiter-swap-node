@@ -9,8 +9,8 @@
     "@jup-ag/api": "^6.0.30",
     "@lightprotocol/compressed-token": "^0.15.1",
     "@lightprotocol/stateless.js": "^0.15.1",
-    "@solana/web3.js": "1.95.5",
     "@solana/spl-token": "0.4.0",
+    "@solana/web3.js": "1.95.5",
     "@types/node": "^22.9.2",
     "bs58": "^6.0.0",
     "promise-retry": "^2.0.1",
@@ -18,9 +18,10 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "tsx": "^4.7.1",
+    "@solana/spl-token": "0.4.0",
     "@types/promise-retry": "^1.1.6",
-    "@solana/spl-token": "0.4.0"
+    "prettier": "^3.3.3",
+    "tsx": "^4.7.1"
   },
   "scripts": {
     "dev": "NODE_OPTIONS='--no-warnings --no-deprecation' tsx watch src/index.ts",
@@ -29,6 +30,7 @@
     "send": "tsx src/index.ts send true",
     "debug": "NODE_DEBUG=* node --trace-warnings --trace-deprecation --trace-uncaught node_modules/.bin/tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\""
   }
 }
