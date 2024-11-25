@@ -3,15 +3,11 @@
 -   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200): `createInAtaIx`, `decompressIx`, `closeInAtaIx`
 -   Accepts compressed tokens as tokenIn.
 -   Cleans up ATA for tokenIn after swap.
--   Does not clean up nor compress tokenOut. (Enable this via CPI)
+-   Clean up ATA for tokenOut via `compressOutAtaIx` support is in progress.
 
 ### Notes
-
--   Demo requires `directSwapsOnly=true` to avoid occasional tx size overrun (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
-
--   Further optimization paths:
-    -   Add `compressTokenOut` option. Requires invocation via CPI to get `exactOut`.
-    -   Enable use of `sharedTokenAccounts` to avoid opening and closing ATAs for tokenIn/tokenOut.
+-   This e2e integration is possible without on-chain changes to the Jup program.
+-   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
 
 ### Setup
 
