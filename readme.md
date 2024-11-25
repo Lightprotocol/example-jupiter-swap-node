@@ -6,7 +6,7 @@
 -   Clean up ATA for tokenOut via `compressOutAtaIx` support is in progress.
 
 ### Notes
--   This e2e integration is possible without on-chain changes to the Jup program.
+-   This e2e integration does not require on-chain changes to the Jup program.
 -   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
 
 ### Setup
