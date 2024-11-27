@@ -1,9 +1,15 @@
 ## Jup Swap with Compressed Tokens - Demo
 
--   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200): `createTokenInAtaIx`, `createTokenOutAtaIx`, `decompressTokenInIx`, `compressTokenOutIx`, `closeTokenInAtaIx`, `closeTokenOutAtaIx`
+-   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200):
+    -   `createTokenInAtaIx`,
+    -   `createTokenOutAtaIx`,
+    -   `decompressTokenInIx`,
+    -   `compressTokenOutIx`,
+    -   `closeTokenInAtaIx`,
+    -   `closeTokenOutAtaIx`
 -   Accepts compressed tokens as tokenIn
--   Returns compressed tokens as tokenOut (set `COMPRESS_TOKEN_OUT=true` to enable)
--   Cleans up intermediate ATAs for tokenIn and tokenOut after the swap.
+-   Returns SPL or compressed tokens as tokenOut (set `COMPRESS_TOKEN_OUT=true` to enable)
+-   Cleans up intermediate ATAs after the swap.
 
 ### Notes
 
