@@ -1,7 +1,7 @@
 /// Adapted from https://github.com/jup-ag/jupiter-quote-api-node/blob/main/example/utils/transactionSender.ts#L20
 /// MIT License
-/// For purpose of demoing compressed token swaps with the Jupiter API
-/// Added logToFile()
+/// For purpose of demoing compressed token swaps with the Jupiter API.
+/// Added logToFile().
 import { Rpc, sleep } from '@lightprotocol/stateless.js';
 import {
     BlockhashWithExpiryBlockHeight,
@@ -41,7 +41,7 @@ async function transactionSenderAndConfirmationWaiter({
 
     const abortableResender = async () => {
         while (true) {
-            await sleep(2_000);
+            await sleep(3_500);
             if (abortSignal.aborted) return;
             try {
                 logToFile('Resending transaction...', debug);
@@ -58,7 +58,7 @@ async function transactionSenderAndConfirmationWaiter({
     try {
         abortableResender();
         const lastValidBlockHeight =
-            blockhashWithExpiryBlockHeight.lastValidBlockHeight - 50; // waits 100 blocks
+            blockhashWithExpiryBlockHeight.lastValidBlockHeight - 50;
         logToFile(
             `Waiting for confirmation with lastValidBlockHeight: ${lastValidBlockHeight}`,
             debug,

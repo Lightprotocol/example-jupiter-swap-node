@@ -23,14 +23,14 @@ yarn
 
 ```
 # get quotes, see tx size
-ROUNDS=5 yarn dryrun    # runs 5 rounds
-yarn dryrun            # runs 1 round (default)
+ROUNDS=5 yarn quote    # runs 5 rounds
+yarn quote            # runs 1 round (default)
 ```
 
 ```
 # also send and confirm
-ROUNDS=5 yarn send      # runs 5 rounds
-yarn send              # runs 1 round (default)
+ROUNDS=5 yarn swap      # runs 5 rounds
+yarn swap              # runs 1 round (default)
 ```
 
 ### Example tx sigs:

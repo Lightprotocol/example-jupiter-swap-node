@@ -1,7 +1,5 @@
+import { LOG_FILE } from './constants.ts';
 import fs from 'fs';
-import path from 'path';
-
-const LOG_FILE = path.join(process.cwd(), 'swap.log');
 
 export const logToFile = (message: string, debug: boolean = true) => {
     const timestamp = new Date().toISOString();
@@ -18,13 +16,10 @@ export const logEnd = (debug: boolean = true) => {
     logToFile(
         '================================================================================',
     );
-    logToFile('\n');
     logToFile(
         '================================================================================',
     );
-    logToFile('\n');
     logToFile(
         '================================================================================',
     );
-    logToFile('\n');
 };

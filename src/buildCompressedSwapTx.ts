@@ -19,15 +19,18 @@ import {
 } from '@jup-ag/api';
 import {
     CompressedTokenProgram,
+    CompressSplTokenAccountParams,
     selectMinCompressedTokenAccountsForTransfer,
 } from '@lightprotocol/compressed-token';
 import {
     bn,
     defaultTestStateTreeAccounts,
+    parseTokenLayoutWithIdl,
     Rpc,
 } from '@lightprotocol/stateless.js';
-import { lightLut, swapConfig, swapRequestConfig } from './constants.ts';
+import { LIGHT_LUT, SWAP_CONFIG, SWAP_REQUEST_CONFIG } from './constants.ts';
 import { logEnd, logToFile } from './logger.ts';
+import { TOKEN_PROGRAM_ID } from './constants.ts';
 
 const jupiterApi = createJupiterApiClient();
 
@@ -67,13 +70,13 @@ const getAddressLookupTableAccounts = async (
 };
 
 const getQuote = async (
-    inputMint: PublicKey, // allows override
-    outputMint: PublicKey, // allows override
-    amount: number, // allows override
+    inputMint: PublicKey,
+    outputMint: PublicKey,
+    amount: number,
     debug: boolean,
 ) => {
     const quoteGetRequest: QuoteGetRequest = {
-        ...swapConfig,
+        ...SWAP_CONFIG,
         inputMint: inputMint.toBase58(),
         outputMint: outputMint.toBase58(),
         amount,
@@ -89,7 +92,7 @@ const getSwapInstructions = async (
     quoteResponse: QuoteResponse,
 ) => {
     const swapRequest: SwapRequest = {
-        ...swapRequestConfig,
+        ...SWAP_REQUEST_CONFIG,
         userPublicKey: swapUserPubkey.toBase58(),
         quoteResponse,
     };
@@ -98,7 +101,7 @@ const getSwapInstructions = async (
     return instructions;
 };
 
-const getDecompressInstruction = async (
+const getDecompressTokenInstruction = async (
     mint: PublicKey,
     amount: number,
     connection: Rpc,
@@ -107,13 +110,20 @@ const getDecompressInstruction = async (
 ) => {
     amount = bn(amount);
 
-    const compressedTokenAccounts =
-        await connection.getCompressedTokenAccountsByOwner(owner, {
-            mint,
-        });
+    // Get compressed token accounts with custom Token program. Therefore we
+    // must parse in the client instead of using
+    // getCompressedTokenAccountsByOwner.
+    const compressedTokenAccounts = (
+        await connection.getCompressedAccountsByOwner(TOKEN_PROGRAM_ID)
+    ).items
+        .map(acc => ({
+            compressedAccount: acc,
+            parsed: parseTokenLayoutWithIdl(acc, TOKEN_PROGRAM_ID)!,
+        }))
+        .filter(acc => acc.parsed.mint.equals(mint));
 
     const [inputAccounts] = selectMinCompressedTokenAccountsForTransfer(
-        compressedTokenAccounts.items,
+        compressedTokenAccounts,
         amount,
     );
 
@@ -130,8 +140,23 @@ const getDecompressInstruction = async (
         recentInputStateRootIndices: proof.rootIndices,
         recentValidityProof: proof.compressedProof,
     });
-
     return ix;
+};
+
+/// Compresses full tokenOut (determined at runtime) from ata to owner.
+const getCompressTokenOutInstruction = async (
+    mint: PublicKey,
+    owner: PublicKey,
+    ata: PublicKey,
+) => {
+    const param: CompressSplTokenAccountParams = {
+        feePayer: owner,
+        mint,
+        tokenAccount: ata,
+        authority: owner,
+        outputStateTree: defaultTestStateTreeAccounts().merkleTree,
+    };
+    return await CompressedTokenProgram.compressSplTokenAccount(param);
 };
 
 export async function buildCompressedSwapTx(
@@ -148,18 +173,15 @@ export async function buildCompressedSwapTx(
     );
 
     const {
-        tokenLedgerInstruction, // If you are using `useTokenLedger = true`.
         computeBudgetInstructions, // The necessary instructions to setup the compute budget.
-        setupInstructions, // Setup missing ATA for the users.
         swapInstruction: swapInstructionPayload, // The actual swap instruction.
-        cleanupInstruction, // Unwrap the SOL if `wrapAndUnwrapSol = true`.
         addressLookupTableAddresses, // The lookup table addresses that you can use if you are using versioned transaction.
     } = instructions;
 
     const addressLookupTableAccounts: AddressLookupTableAccount[] = [];
 
     // Light LUT
-    addressLookupTableAddresses.push(lightLut);
+    addressLookupTableAddresses.push(LIGHT_LUT);
     addressLookupTableAccounts.push(
         ...(await getAddressLookupTableAccounts(
             addressLookupTableAddresses,
@@ -168,22 +190,44 @@ export async function buildCompressedSwapTx(
     );
 
     const inAta = getAssociatedTokenAddressSync(inputMint, payerPublicKey);
-    const decompressIx = await getDecompressInstruction(
-        inputMint,
-        amount,
-        connection,
-        payerPublicKey,
-        inAta,
-    );
+    const outAta = getAssociatedTokenAddressSync(outputMint, payerPublicKey);
+
+    // `SetupInstructions` equivalent:
+    // 1. create tokenInAta. 2. create tokenOutAta. 3. decompress tokenIn.
     const createInAtaIx = createAssociatedTokenAccountInstruction(
         payerPublicKey,
         inAta,
         payerPublicKey,
         inputMint,
     );
+    const createOutAtaIx = createAssociatedTokenAccountInstruction(
+        payerPublicKey,
+        outAta,
+        payerPublicKey,
+        outputMint,
+    );
+    const decompressIx = await getDecompressTokenInstruction(
+        inputMint,
+        amount,
+        connection,
+        payerPublicKey,
+        inAta,
+    );
 
+    // `CleanupInstruction` equivalent:
+    // 1. compress tokenOut. 2. close tokenInAta. 3. close tokenOutAta.
+    const compressOutAtaIx = await getCompressTokenOutInstruction(
+        outputMint,
+        payerPublicKey,
+        outAta,
+    );
     const closeInAtaIx = createCloseAccountInstruction(
         inAta,
+        payerPublicKey,
+        payerPublicKey,
+    );
+    const closeOutAtaIx = createCloseAccountInstruction(
+        outAta,
         payerPublicKey,
         payerPublicKey,
     );
@@ -191,11 +235,12 @@ export async function buildCompressedSwapTx(
     const allInstructions = [
         ...computeBudgetInstructions.map(deserializeInstruction),
         createInAtaIx,
+        createOutAtaIx,
         decompressIx,
-        ...setupInstructions.map(deserializeInstruction),
         deserializeInstruction(swapInstructionPayload),
+        compressOutAtaIx,
         closeInAtaIx,
-        deserializeInstruction(cleanupInstruction!),
+        closeOutAtaIx,
     ].filter(Boolean);
 
     logToFile('Instructions:', debug);
@@ -213,13 +258,13 @@ export async function buildCompressedSwapTx(
     });
 
     const blockhash = (await connection.getLatestBlockhash()).blockhash;
-
     const messageV0 = new TransactionMessage({
         payerKey: payerPublicKey,
         recentBlockhash: blockhash,
         instructions: allInstructions,
     }).compileToV0Message(addressLookupTableAccounts);
     const transaction = new VersionedTransaction(messageV0);
+
     try {
         logToFile(
             `Transaction size (bytes): ${transaction.serialize().length}`,

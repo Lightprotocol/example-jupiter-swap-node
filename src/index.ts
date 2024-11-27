@@ -1,48 +1,65 @@
 import { buildCompressedSwapTx } from './buildCompressedSwapTx.ts';
 import { Rpc, sleep } from '@lightprotocol/stateless.js';
 import {
-    payerPublicKey,
-    swapUserKeypair,
-    inputMint,
-    outputMint,
-    amount,
-    compressionUrl,
-    rpcUrl,
+    PAYER_PUBLIC_KEY,
+    SWAP_USER_KEYPAIR,
+    INPUT_MINT,
+    OUTPUT_MINT,
+    AMOUNT,
+    COMPRESSION_URL,
+    RPC_URL,
+    TOKEN_PROGRAM_ID,
+    LOG_FILE,
 } from './constants.ts';
-import { compressTokenAndCleanupAtaSetup } from './setup.ts';
+import { compressTokenAndCleanupAtaSetup, registerMint } from './setup.ts';
 import { logToFile } from './logger.ts';
 import { handleSend } from './handleSend.ts';
-type Flow = 'dryrun' | 'send';
+import { CompressedTokenProgram } from '@lightprotocol/compressed-token';
+
+type Flow = 'quote' | 'swap';
 let ROUNDS = parseInt(process.env.ROUNDS || '1');
 
-async function main(flow: Flow = 'dryrun', debug: boolean = true) {
-    console.log('Compressed Jupiter swap started');
-    console.log(`Flow: ${flow}, Debug: ${debug}, Total rounds: ${ROUNDS}`);
+async function main(flow: Flow = 'quote', debug: boolean = true) {
+    logToFile(
+        `Starting compressed Jupiter swap: flow=${flow}, debug=${debug}, rounds=${ROUNDS}`,
+        debug,
+    );
+    console.log('Storing debug logs in:', LOG_FILE);
+
+    CompressedTokenProgram.setProgramId(TOKEN_PROGRAM_ID); // overriding program id for compressOutAta feature
+    const connection = new Rpc(RPC_URL, COMPRESSION_URL, COMPRESSION_URL);
+
+    console.log('Setting up...');
+    await registerMint(connection, INPUT_MINT, debug);
+    await registerMint(connection, OUTPUT_MINT, debug);
+    await compressTokenAndCleanupAtaSetup(
+        INPUT_MINT,
+        connection,
+        SWAP_USER_KEYPAIR,
+        debug,
+    );
+    await compressTokenAndCleanupAtaSetup(
+        OUTPUT_MINT,
+        connection,
+        SWAP_USER_KEYPAIR,
+        debug,
+    );
 
     const totalRounds = ROUNDS;
     while (ROUNDS > 0) {
         console.log(`Running round ${totalRounds - ROUNDS + 1}/${totalRounds}`);
         ROUNDS--;
         try {
-            const connection = new Rpc(rpcUrl, compressionUrl, compressionUrl);
-
-            // reset the setup
-            await compressTokenAndCleanupAtaSetup(
-                inputMint,
-                connection,
-                swapUserKeypair, // also payer
-            );
-
             const transaction = await buildCompressedSwapTx(
                 connection,
-                payerPublicKey,
-                inputMint,
-                outputMint,
-                amount,
+                PAYER_PUBLIC_KEY,
+                INPUT_MINT,
+                OUTPUT_MINT,
+                AMOUNT,
                 debug,
             );
 
-            transaction.sign([swapUserKeypair]);
+            transaction.sign([SWAP_USER_KEYPAIR]);
 
             const txLength = transaction.serialize().length;
             console.log(`Transaction size: ${txLength} bytes`);
@@ -56,8 +73,8 @@ async function main(flow: Flow = 'dryrun', debug: boolean = true) {
                 continue;
             }
 
-            if (flow === 'dryrun') {
-                console.log('dryrun completed');
+            if (flow === 'quote') {
+                console.log('quote received');
                 continue;
             }
 
@@ -79,7 +96,7 @@ async function main(flow: Flow = 'dryrun', debug: boolean = true) {
     }
 }
 const args = process.argv.slice(2);
-const flow = (args[0] as Flow) || 'dryrun';
+const flow = (args[0] as Flow) || 'quote';
 const debug = args[1] === 'true' || false;
 
 main(flow, debug);
