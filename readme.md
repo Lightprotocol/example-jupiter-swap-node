@@ -1,12 +1,17 @@
 ## Jup Swap with Compressed Tokens - Demo
 
--   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200): `createTokenInAtaIx`, `createTokenOutAtaIx`, `decompressTokenInIx`, `compressTokenOutIx`, `closeTokenInAtaIx`, `closeTokenOutAtaIx`
--   Accepts compressed tokens as tokenIn
--   Returns compressed tokens as tokenOut
--   Cleans up intermediate ATAs for tokenIn after the swap
--   Cleans up ATA for tokenOut after the swap.
+-   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200):
+    *   `createTokenInAtaIx`,
+    *   `createTokenOutAtaIx`,
+    *   `decompressTokenInIx`,
+    *   `compressTokenOutIx`,
+    *   `closeTokenInAtaIx`,
+    *   `closeTokenOutAtaIx`
+-   Accepts compressed tokens as tokenIn, returns tokenOut as SPL or compressed token.
+-   Cleans up intermediate ATAs after the swap
 
-to use the `compressTokenOutIx` feature, checkout [this branch](https://github.com/Lightprotocol/example-jupiter-swap-node/tree/use-compress-out-ata).
+
+To use the `compressTokenOutIx` feature, checkout [this branch](https://github.com/Lightprotocol/example-jupiter-swap-node/tree/use-compress-out-ata).
 
 ### Notes
 
@@ -30,14 +35,12 @@ yarn
 # get quotes, see tx size
 yarn quote                          # runs 1 round (default)
 ROUNDS=5 yarn quote                 # runs 5 rounds
-COMPRESS_TOKEN_OUT=true yarn quote  # uses compressTokenOutIx feature (default: false)
 ```
 
 ```
 # also send and confirm
 yarn swap                           # runs 1 round (default)
 ROUNDS=5 yarn swap                  # runs 5 rounds
-COMPRESS_TOKEN_OUT=true yarn swap   # uses compressTokenOutIx feature (default: false)
 ```
 
 ### Example tx sigs:
