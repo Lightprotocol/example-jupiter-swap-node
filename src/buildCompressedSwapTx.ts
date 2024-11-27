@@ -166,6 +166,7 @@ export async function buildCompressedSwapTx(
     outputMint: PublicKey,
     amount: number,
     debug: boolean,
+    compressOutput: boolean = false,
 ) {
     const instructions = await getSwapInstructions(
         payerPublicKey,
@@ -194,19 +195,19 @@ export async function buildCompressedSwapTx(
 
     // `SetupInstructions` equivalent:
     // 1. create tokenInAta. 2. create tokenOutAta. 3. decompress tokenIn.
-    const createInAtaIx = createAssociatedTokenAccountInstruction(
+    const createTokenInAtaIx = createAssociatedTokenAccountInstruction(
         payerPublicKey,
         inAta,
         payerPublicKey,
         inputMint,
     );
-    const createOutAtaIx = createAssociatedTokenAccountInstruction(
+    const createTokenOutAtaIx = createAssociatedTokenAccountInstruction(
         payerPublicKey,
         outAta,
         payerPublicKey,
         outputMint,
     );
-    const decompressIx = await getDecompressTokenInstruction(
+    const decompressTokenInIx = await getDecompressTokenInstruction(
         inputMint,
         amount,
         connection,
@@ -216,17 +217,17 @@ export async function buildCompressedSwapTx(
 
     // `CleanupInstruction` equivalent:
     // 1. compress tokenOut. 2. close tokenInAta. 3. close tokenOutAta.
-    const compressOutAtaIx = await getCompressTokenOutInstruction(
+    const compressTokenOutIx = await getCompressTokenOutInstruction(
         outputMint,
         payerPublicKey,
         outAta,
     );
-    const closeInAtaIx = createCloseAccountInstruction(
+    const closeTokenInAtaIx = createCloseAccountInstruction(
         inAta,
         payerPublicKey,
         payerPublicKey,
     );
-    const closeOutAtaIx = createCloseAccountInstruction(
+    const closeTokenOutAtaIx = createCloseAccountInstruction(
         outAta,
         payerPublicKey,
         payerPublicKey,
@@ -234,14 +235,14 @@ export async function buildCompressedSwapTx(
 
     const allInstructions = [
         ...computeBudgetInstructions.map(deserializeInstruction),
-        createInAtaIx,
-        createOutAtaIx,
-        decompressIx,
+        createTokenInAtaIx,
+        createTokenOutAtaIx,
+        decompressTokenInIx,
         deserializeInstruction(swapInstructionPayload),
-        compressOutAtaIx,
-        closeInAtaIx,
-        closeOutAtaIx,
-    ].filter(Boolean);
+        compressOutput ? compressTokenOutIx : null,
+        closeTokenInAtaIx,
+        compressOutput ? closeTokenOutAtaIx : null,
+    ].filter(Boolean) as TransactionInstruction[];
 
     logToFile('Instructions:', debug);
     allInstructions.forEach((ix, i) => {

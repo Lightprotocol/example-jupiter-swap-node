@@ -18,6 +18,7 @@ import { CompressedTokenProgram } from '@lightprotocol/compressed-token';
 
 type Flow = 'quote' | 'swap';
 let ROUNDS = parseInt(process.env.ROUNDS || '1');
+const COMPRESS_TOKEN_OUT = process.env.COMPRESS_TOKEN_OUT === 'true' || false;
 
 async function main(flow: Flow = 'quote', debug: boolean = true) {
     logToFile(
@@ -57,6 +58,7 @@ async function main(flow: Flow = 'quote', debug: boolean = true) {
                 OUTPUT_MINT,
                 AMOUNT,
                 debug,
+                COMPRESS_TOKEN_OUT,
             );
 
             transaction.sign([SWAP_USER_KEYPAIR]);
