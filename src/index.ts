@@ -22,7 +22,7 @@ const COMPRESS_TOKEN_OUT = process.env.COMPRESS_TOKEN_OUT === 'true' || false;
 
 async function main(flow: Flow = 'quote', debug: boolean = true) {
     logToFile(
-        `Starting compressed Jupiter swap: flow=${flow}, debug=${debug}, rounds=${ROUNDS}`,
+        `flow=${flow}, debug=${debug}, rounds=${ROUNDS}, compressTokenOut=${COMPRESS_TOKEN_OUT}`,
         debug,
     );
     console.log('Storing debug logs in:', LOG_FILE);
@@ -30,27 +30,27 @@ async function main(flow: Flow = 'quote', debug: boolean = true) {
     CompressedTokenProgram.setProgramId(TOKEN_PROGRAM_ID); // overriding program id for compressOutAta feature
     const connection = new Rpc(RPC_URL, COMPRESSION_URL, COMPRESSION_URL);
 
-    console.log('Setting up...');
-    await registerMint(connection, INPUT_MINT, debug);
-    await registerMint(connection, OUTPUT_MINT, debug);
-    await compressTokenAndCleanupAtaSetup(
-        INPUT_MINT,
-        connection,
-        SWAP_USER_KEYPAIR,
-        debug,
-    );
-    await compressTokenAndCleanupAtaSetup(
-        OUTPUT_MINT,
-        connection,
-        SWAP_USER_KEYPAIR,
-        debug,
-    );
-
     const totalRounds = ROUNDS;
     while (ROUNDS > 0) {
         console.log(`Running round ${totalRounds - ROUNDS + 1}/${totalRounds}`);
         ROUNDS--;
         try {
+            console.log('Resetting...'); // need to reset each round if compressTokenOutIx=false
+            await registerMint(connection, INPUT_MINT, debug);
+            await registerMint(connection, OUTPUT_MINT, debug);
+            await compressTokenAndCleanupAtaSetup(
+                INPUT_MINT,
+                connection,
+                SWAP_USER_KEYPAIR,
+                debug,
+            );
+            await compressTokenAndCleanupAtaSetup(
+                OUTPUT_MINT,
+                connection,
+                SWAP_USER_KEYPAIR,
+                debug,
+            );
+
             const transaction = await buildCompressedSwapTx(
                 connection,
                 PAYER_PUBLIC_KEY,

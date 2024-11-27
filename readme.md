@@ -42,6 +42,7 @@ COMPRESS_TOKEN_OUT=true yarn swap   # uses compressTokenOutIx feature (default: 
 with compressTokenOutIx:
 
 -   https://solscan.io/tx/47duf8bTsK7Fi6dQgeHbD3GwPXC1GFiiBnLEq1i6jSRtKcwc2by7Rxbx7dxkKeA6EyVuJf1b5BhL6EKgsSAzFKXG
+-   https://solscan.io/tx/2qdBGCKhGnhSQKfoyiY3eHoChuHkQ7QtZpCR9m2CWTvLxwivxcRTNpUqtQkxPrWHd2ibh5QWwjsTjGnq7VsmAwzd
 
 without compressTokenOutIx:
 
