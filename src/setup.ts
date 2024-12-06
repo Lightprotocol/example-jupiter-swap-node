@@ -1,4 +1,5 @@
 import {
+    bn,
     buildAndSignTx,
     Rpc,
     sendAndConfirmTx,
@@ -82,7 +83,7 @@ export async function compressTokenAndCleanupAtaSetup(
                 connection,
                 swapUserKeypair,
                 mint,
-                cleanupALlAmount.value.amount,
+                bn(cleanupALlAmount.value.amount),
                 swapUserKeypair,
                 ata,
                 payerPublicKey,

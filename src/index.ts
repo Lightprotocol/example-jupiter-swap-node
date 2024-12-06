@@ -14,6 +14,7 @@ import {
 import { compressTokenAndCleanupAtaSetup, registerMint } from './setup.ts';
 import { logToFile } from './logger.ts';
 import { handleSend } from './handleSend.ts';
+import { CompressedTokenProgram } from '@lightprotocol/compressed-token';
 
 type Flow = 'quote' | 'swap';
 let ROUNDS = parseInt(process.env.ROUNDS || '1');
@@ -28,10 +29,19 @@ async function main(flow: Flow = 'quote', debug: boolean = true) {
 
     const connection = new Rpc(RPC_URL, COMPRESSION_URL, COMPRESSION_URL);
 
+    // CompressedTokenProgram.setProgramId(TOKEN_PROGRAM_ID);
     const totalRounds = ROUNDS;
     while (ROUNDS > 0) {
         console.log(`Running round ${totalRounds - ROUNDS + 1}/${totalRounds}`);
         ROUNDS--;
+        const compressedTokenAccounts =
+            await connection.getCompressedTokenAccountsByOwner(
+                PAYER_PUBLIC_KEY,
+            );
+        console.log(
+            'Compressed token accounts:',
+            compressedTokenAccounts.items.map(item => JSON.stringify(item)),
+        );
         try {
             console.log('Resetting...'); // need to reset each round if compressTokenOutIx=false
             await registerMint(connection, INPUT_MINT, debug);

@@ -1,43 +1,19 @@
 import { Connection, TransactionMessage } from '@solana/web3.js';
 import { AddressLookupTableAccount } from '@solana/web3.js';
 import {
-    getAssociatedTokenAddressSync,
-    createAssociatedTokenAccountInstruction,
-    createCloseAccountInstruction,
-} from '@solana/spl-token';
-import {
     PublicKey,
     TransactionInstruction,
     VersionedTransaction,
 } from '@solana/web3.js';
-import {
-    createJupiterApiClient,
-    Instruction,
-    QuoteGetRequest,
-    QuoteResponse,
-    SwapRequest,
-} from '@jup-ag/api';
-import {
-    CompressedTokenProgram,
-    CompressSplTokenAccountParams,
-    selectMinCompressedTokenAccountsForTransfer,
-} from '@lightprotocol/compressed-token';
-import {
-    bn,
-    createRpc,
-    defaultTestStateTreeAccounts,
-    parseTokenLayoutWithIdl,
-    Rpc,
-} from '@lightprotocol/stateless.js';
+import { Instruction, QuoteGetRequest, QuoteResponse } from '@jup-ag/api';
+import { createRpc, Rpc } from '@lightprotocol/stateless.js';
 import {
     COMPRESSION_URL,
-    LIGHT_LUT,
     RPC_URL,
     SWAP_CONFIG,
     SWAP_REQUEST_CONFIG,
 } from './constants.ts';
 import { logEnd, logToFile } from './logger.ts';
-import { TOKEN_PROGRAM_ID } from './constants.ts';
 import {
     createJupiterApiAdapterClient,
     DefaultApiAdapter,
@@ -118,64 +94,6 @@ const getSwapInstructions = async (
         { compressionMode: TokenCompressionMode.DecompressInput },
     );
     return instructions;
-};
-
-const getDecompressTokenInstruction = async (
-    mint: PublicKey,
-    amount: number,
-    connection: Rpc,
-    owner: PublicKey,
-    ata: PublicKey,
-) => {
-    amount = bn(amount);
-
-    // Get compressed token accounts with custom Token program. Therefore we
-    // must parse in the client instead of using
-    // getCompressedTokenAccountsByOwner.
-    const compressedTokenAccounts = (
-        await connection.getCompressedAccountsByOwner(TOKEN_PROGRAM_ID)
-    ).items
-        .map(acc => ({
-            compressedAccount: acc,
-            parsed: parseTokenLayoutWithIdl(acc, TOKEN_PROGRAM_ID)!,
-        }))
-        .filter(acc => acc.parsed.mint.equals(mint));
-
-    const [inputAccounts] = selectMinCompressedTokenAccountsForTransfer(
-        compressedTokenAccounts,
-        amount,
-    );
-
-    const proof = await connection.getValidityProof(
-        inputAccounts.map(account => bn(account.compressedAccount.hash)),
-    );
-
-    const ix = await CompressedTokenProgram.decompress({
-        payer: owner,
-        inputCompressedTokenAccounts: inputAccounts,
-        toAddress: ata,
-        amount,
-        outputStateTree: defaultTestStateTreeAccounts().merkleTree,
-        recentInputStateRootIndices: proof.rootIndices,
-        recentValidityProof: proof.compressedProof,
-    });
-    return ix;
-};
-
-/// Compresses full tokenOut (determined at runtime) from ata to owner.
-const getCompressTokenOutInstruction = async (
-    mint: PublicKey,
-    owner: PublicKey,
-    ata: PublicKey,
-) => {
-    const param: CompressSplTokenAccountParams = {
-        feePayer: owner,
-        mint,
-        tokenAccount: ata,
-        authority: owner,
-        outputStateTree: defaultTestStateTreeAccounts().merkleTree,
-    };
-    return await CompressedTokenProgram.compressSplTokenAccount(param);
 };
 
 export async function buildCompressedSwapTx(
