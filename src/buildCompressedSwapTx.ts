@@ -24,15 +24,29 @@ import {
 } from '@lightprotocol/compressed-token';
 import {
     bn,
+    createRpc,
     defaultTestStateTreeAccounts,
     parseTokenLayoutWithIdl,
     Rpc,
 } from '@lightprotocol/stateless.js';
-import { LIGHT_LUT, SWAP_CONFIG, SWAP_REQUEST_CONFIG } from './constants.ts';
+import {
+    COMPRESSION_URL,
+    LIGHT_LUT,
+    RPC_URL,
+    SWAP_CONFIG,
+    SWAP_REQUEST_CONFIG,
+} from './constants.ts';
 import { logEnd, logToFile } from './logger.ts';
 import { TOKEN_PROGRAM_ID } from './constants.ts';
+import {
+    createJupiterApiAdapterClient,
+    DefaultApiAdapter,
+    TokenCompressionMode,
+} from '@lightprotocol/jup-api-adapter';
 
-const jupiterApi = createJupiterApiClient();
+const connection = createRpc(RPC_URL, COMPRESSION_URL, COMPRESSION_URL);
+const jupiterApi: DefaultApiAdapter =
+    await createJupiterApiAdapterClient(connection);
 
 const deserializeInstruction = (instruction: Instruction) => {
     return new TransactionInstruction({
@@ -81,8 +95,10 @@ const getQuote = async (
         outputMint: outputMint.toBase58(),
         amount,
     };
-    const quoteResponse: QuoteResponse =
-        await jupiterApi.quoteGet(quoteGetRequest);
+    const quoteResponse: QuoteResponse = await jupiterApi.quoteGetCompressed(
+        quoteGetRequest,
+        TokenCompressionMode.DecompressInput,
+    );
     logToFile(`quoteResponse ${JSON.stringify(quoteResponse, null)}`, debug);
     return quoteResponse;
 };
@@ -91,13 +107,16 @@ const getSwapInstructions = async (
     swapUserPubkey: PublicKey,
     quoteResponse: QuoteResponse,
 ) => {
-    const swapRequest: SwapRequest = {
-        ...SWAP_REQUEST_CONFIG,
-        userPublicKey: swapUserPubkey.toBase58(),
-        quoteResponse,
-    };
-
-    const instructions = await jupiterApi.swapInstructionsPost({ swapRequest });
+    const instructions = await jupiterApi.swapInstructionsPostCompressed(
+        {
+            swapRequest: {
+                ...SWAP_REQUEST_CONFIG,
+                userPublicKey: swapUserPubkey.toBase58(),
+                quoteResponse,
+            },
+        },
+        { compressionMode: TokenCompressionMode.DecompressInput },
+    );
     return instructions;
 };
 
@@ -175,73 +194,29 @@ export async function buildCompressedSwapTx(
 
     const {
         computeBudgetInstructions, // The necessary instructions to setup the compute budget.
-        swapInstruction: swapInstructionPayload, // The actual swap instruction.
+        setupInstructions,
+        swapInstruction, // The actual swap instruction.
+        cleanupInstructions,
         addressLookupTableAddresses, // The lookup table addresses that you can use if you are using versioned transaction.
     } = instructions;
 
-    const addressLookupTableAccounts: AddressLookupTableAccount[] = [];
-
-    // Light LUT
-    addressLookupTableAddresses.push(LIGHT_LUT);
-    addressLookupTableAccounts.push(
-        ...(await getAddressLookupTableAccounts(
+    const addressLookupTableAccounts: AddressLookupTableAccount[] =
+        await getAddressLookupTableAccounts(
             addressLookupTableAddresses,
             connection,
-        )),
-    );
+        );
 
-    const inAta = getAssociatedTokenAddressSync(inputMint, payerPublicKey);
-    const outAta = getAssociatedTokenAddressSync(outputMint, payerPublicKey);
-
+    // TODO: CMP AGAINST
     // `SetupInstructions` equivalent:
     // 1. create tokenInAta. 2. create tokenOutAta. 3. decompress tokenIn.
-    const createTokenInAtaIx = createAssociatedTokenAccountInstruction(
-        payerPublicKey,
-        inAta,
-        payerPublicKey,
-        inputMint,
-    );
-    const createTokenOutAtaIx = createAssociatedTokenAccountInstruction(
-        payerPublicKey,
-        outAta,
-        payerPublicKey,
-        outputMint,
-    );
-    const decompressTokenInIx = await getDecompressTokenInstruction(
-        inputMint,
-        amount,
-        connection,
-        payerPublicKey,
-        inAta,
-    );
-
     // `CleanupInstruction` equivalent:
     // 1. compress tokenOut. 2. close tokenInAta. 3. close tokenOutAta.
-    const compressTokenOutIx = await getCompressTokenOutInstruction(
-        outputMint,
-        payerPublicKey,
-        outAta,
-    );
-    const closeTokenInAtaIx = createCloseAccountInstruction(
-        inAta,
-        payerPublicKey,
-        payerPublicKey,
-    );
-    const closeTokenOutAtaIx = createCloseAccountInstruction(
-        outAta,
-        payerPublicKey,
-        payerPublicKey,
-    );
 
     const allInstructions = [
         ...computeBudgetInstructions.map(deserializeInstruction),
-        createTokenInAtaIx,
-        createTokenOutAtaIx,
-        decompressTokenInIx,
-        deserializeInstruction(swapInstructionPayload),
-        compressOutput ? compressTokenOutIx : null,
-        closeTokenInAtaIx,
-        compressOutput ? closeTokenOutAtaIx : null,
+        ...setupInstructions.map(deserializeInstruction),
+        deserializeInstruction(swapInstruction),
+        ...cleanupInstructions.map(deserializeInstruction),
     ].filter(Boolean) as TransactionInstruction[];
 
     logToFile('Instructions:', debug);

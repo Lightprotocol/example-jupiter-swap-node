@@ -198,6 +198,16 @@
     buffer "^6.0.3"
     tweetnacl "^1.0.3"
 
+"@lightprotocol/jup-api-adapter@file:../jup-api-adapter":
+  version "0.1.0"
+  dependencies:
+    "@jup-ag/api" "^6.0.30"
+    "@lightprotocol/compressed-token" "^0.15.4"
+    "@lightprotocol/stateless.js" "^0.15.4"
+    "@solana/spl-token" "0.4.0"
+    "@solana/web3.js" "1.95.5"
+    bs58 "^6.0.0"
+
 "@lightprotocol/stateless.js@^0.15.4":
   version "0.15.4"
   resolved "https://registry.yarnpkg.com/@lightprotocol/stateless.js/-/stateless.js-0.15.4.tgz#3eae16a9e09f22412c4345fc7c9c176f449133d7"
@@ -384,6 +394,13 @@
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.4.tgz#0b92dcc0cc1c81f6f306a381f28e31b1a56536e9"
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
+
+"@types/bn.js@^5.1.6":
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.6.tgz#9ba818eec0c85e4d3c679518428afdf611d03203"
+  integrity sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==
+  dependencies:
+    "@types/node" "*"
 
 "@types/connect@^3.4.33":
   version "3.4.38"

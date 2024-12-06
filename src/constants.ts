@@ -55,10 +55,10 @@ export const SWAP_CONFIG: QuoteGetRequest = {
 export const SWAP_REQUEST_CONFIG: SwapRequest = {
     userPublicKey: null!, // set in handleSend.ts
     quoteResponse: null!, // set in handleSend.ts
-    skipUserAccountsRpcCalls: true,
+    skipUserAccountsRpcCalls: false,
     dynamicComputeUnitLimit: false,
-    wrapAndUnwrapSol: false,
-    prioritizationFeeLamports: 200_000,
+    wrapAndUnwrapSol: true,
+    // prioritizationFeeLamports: 200_000,
 };
 
 console.log('INPUT_MINT: ', INPUT_MINT.toBase58());

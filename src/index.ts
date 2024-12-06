@@ -14,7 +14,6 @@ import {
 import { compressTokenAndCleanupAtaSetup, registerMint } from './setup.ts';
 import { logToFile } from './logger.ts';
 import { handleSend } from './handleSend.ts';
-import { CompressedTokenProgram } from '@lightprotocol/compressed-token';
 
 type Flow = 'quote' | 'swap';
 let ROUNDS = parseInt(process.env.ROUNDS || '1');
@@ -27,7 +26,6 @@ async function main(flow: Flow = 'quote', debug: boolean = true) {
     );
     console.log('Storing debug logs in:', LOG_FILE);
 
-    CompressedTokenProgram.setProgramId(TOKEN_PROGRAM_ID); // overriding program id for compressOutAta feature
     const connection = new Rpc(RPC_URL, COMPRESSION_URL, COMPRESSION_URL);
 
     const totalRounds = ROUNDS;

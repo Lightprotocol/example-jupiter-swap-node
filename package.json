@@ -6,8 +6,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@jup-ag/api": "^6.0.30",
     "@lightprotocol/compressed-token": "^0.15.4",
+    "@lightprotocol/jup-api-adapter": "file:../jup-api-adapter",
     "@lightprotocol/stateless.js": "^0.15.4",
     "@solana/spl-token": "0.4.0",
     "@solana/web3.js": "1.95.5",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@solana/spl-token": "0.4.0",
+    "@types/bn.js": "^5.1.6",
     "@types/promise-retry": "^1.1.6",
     "fastestsmallesttextencoderdecoder": "^1.0.22",
     "prettier": "^3.3.3",
