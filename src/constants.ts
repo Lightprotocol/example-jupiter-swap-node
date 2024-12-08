@@ -60,7 +60,6 @@ export const SWAP_REQUEST_CONFIG: SwapRequest = {
     dynamicComputeUnitLimit: false,
     wrapAndUnwrapSol: true,
     computeUnitPriceMicroLamports: calculateComputeUnitPrice(10_000, 1_400_000),
-    // prioritizationFeeLamports: 200_000,
 };
 
 console.log('INPUT_MINT: ', INPUT_MINT.toBase58());

@@ -14,7 +14,7 @@ import { logToFile } from './logger.ts';
 
 type TransactionSenderAndConfirmationWaiterArgs = {
     connection: Connection;
-    serializedTransaction: Buffer;
+    serializedTransaction: Uint8Array;
     blockhashWithExpiryBlockHeight: BlockhashWithExpiryBlockHeight;
     debug: boolean;
 };
@@ -134,7 +134,7 @@ async function transactionSenderAndConfirmationWaiter({
 
 export async function handleSend(
     connection: Rpc,
-    serializedTransaction: Buffer,
+    serializedTransaction: Uint8Array,
     blockhash: string,
     lastValidBlockHeight: number,
     debug: boolean,

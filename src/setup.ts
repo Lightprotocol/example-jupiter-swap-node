@@ -110,3 +110,25 @@ export async function compressTokenAndCleanupAtaSetup(
     );
     logToFile(`closeTxId: ${closeTxId}`, debug);
 }
+
+export async function setupTokens(
+    connection: Rpc,
+    inputMint: PublicKey,
+    outputMint: PublicKey,
+    debug: boolean,
+) {
+    await registerMint(connection, inputMint, debug);
+    await registerMint(connection, outputMint, debug);
+    await compressTokenAndCleanupAtaSetup(
+        inputMint,
+        connection,
+        SWAP_USER_KEYPAIR,
+        debug,
+    );
+    await compressTokenAndCleanupAtaSetup(
+        outputMint,
+        connection,
+        SWAP_USER_KEYPAIR,
+        debug,
+    );
+}

@@ -30,17 +30,15 @@ yarn
 ```
 
 ```
-# get quotes, see tx size
-yarn quote                          # runs 1 round (default)
-ROUNDS=5 yarn quote                 # runs 5 rounds
-COMPRESS_TOKEN_OUT=true yarn quote  # uses compressTokenOutIx feature (default: false)
+yarn quote  # get quote
+yarn swap   # quote + send tx
 ```
 
 ```
-# also send and confirm
-yarn swap                           # runs 1 round (default)
-ROUNDS=5 yarn swap                  # runs 5 rounds
-COMPRESS_TOKEN_OUT=true yarn swap   # uses compressTokenOutIx feature (default: false)
+`swap-with-instructions.ts` requests instructions from the JUP api and builds the tx manually.
+
+yarn quote-ixs                  # get quote
+yarn swap-ixs                   # quote + send tx
 ```
 
 ### Example tx sigs:

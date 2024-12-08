@@ -187,7 +187,7 @@
   resolved "https://registry.yarnpkg.com/@jup-ag/api/-/api-6.0.30.tgz#1beb8876affb803bea8ff18a24259b48272a3cf2"
   integrity sha512-+LSo5yXR150kXg+iyVhNCSwK+PSL+MsB9Wvl930zgeeW0LWUTGyMhibz6wcqcViol+F0RMAVOYh6ryJYO1kkZw==
 
-"@lightprotocol/compressed-token@^0.16.0":
+"@lightprotocol/compressed-token@^0.16.0", "@lightprotocol/compressed-token@~0.16.0":
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/@lightprotocol/compressed-token/-/compressed-token-0.16.0.tgz#c4e87a4e10807e3565dbed85b5b2d2c5bf0ac471"
   integrity sha512-hpRCxtMMYp17FAynjQCS9BGoP1vYALWISFRLqVGIFoc4foOBEBMF2YGmR2naNIkS921jpY3Idj3iQtAj1m5EYw==
@@ -198,11 +198,19 @@
     buffer "6.0.3"
     tweetnacl "1.0.3"
 
-"@lightprotocol/jup-api-adapter@link:../jup-api-adapter":
-  version "0.0.0"
-  uid ""
+"@lightprotocol/jup-api-adapter@~0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@lightprotocol/jup-api-adapter/-/jup-api-adapter-0.1.5.tgz#72d76c4fc261717f76067bea918069568f9ddb2b"
+  integrity sha512-a4nOkU1uJkMellT1WfEzbU6Dvr/0hMkGIiM9h1lCSOkMvtzEOZZeKdMzykSbjmHE8J6hwYi9KeI/9SnQolWiMQ==
+  dependencies:
+    "@jup-ag/api" "6.0.30"
+    "@lightprotocol/compressed-token" "^0.16.0"
+    "@lightprotocol/stateless.js" "^0.16.0"
+    "@solana/spl-token" "0.4.8"
+    "@solana/web3.js" "1.95.3"
+    bs58 "^6.0.0"
 
-"@lightprotocol/stateless.js@^0.16.0":
+"@lightprotocol/stateless.js@^0.16.0", "@lightprotocol/stateless.js@~0.16.0":
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/@lightprotocol/stateless.js/-/stateless.js-0.16.0.tgz#2c375353cc114985aa9f69a9573c5afd88b7d035"
   integrity sha512-HX4i/OhhYEY6+FKGpCSAL6/LT+0Lge4Gz+mckgZXSTR9wnk3o6yVoQxAh6/SetRSWP/9kamt2GUPnoZOalIjPQ==
