@@ -1,5 +1,6 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { QuoteGetRequest, SwapRequest } from '@jup-ag/api';
+import { calculateComputeUnitPrice } from '@lightprotocol/stateless.js';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import os from 'os';
@@ -58,6 +59,7 @@ export const SWAP_REQUEST_CONFIG: SwapRequest = {
     skipUserAccountsRpcCalls: false,
     dynamicComputeUnitLimit: false,
     wrapAndUnwrapSol: true,
+    computeUnitPriceMicroLamports: calculateComputeUnitPrice(10_000, 1_400_000),
     // prioritizationFeeLamports: 200_000,
 };
 
