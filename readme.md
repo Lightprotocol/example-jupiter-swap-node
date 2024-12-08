@@ -1,21 +1,8 @@
 ## Jup Swap with Compressed Tokens - Demo
 
--   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200):
-    -   `createTokenInAtaIx`,
-    -   `createTokenOutAtaIx`,
-    -   `decompressTokenInIx`,
-    -   `compressTokenOutIx`,
-    -   `closeTokenInAtaIx`,
-    -   `closeTokenOutAtaIx`
--   Accepts compressed tokens as tokenIn
--   Returns SPL or compressed tokens as tokenOut (set `COMPRESS_TOKEN_OUT=true` to enable)
--   Cleans up intermediate ATAs after the swap.
+This is an example using `@lightprotocol/jup-api-adapter`. Jup-api-adapter is a thin wrapper around the Jupiter API adding compressed token support.
 
-### Notes
-
--   This e2e integration does not require on-chain changes to the Jup program.
--   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
--   Future/Optional: `useSharedAccounts` could remove the need for intermediate ATA setup and cleanup.
+For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adapter).
 
 ### Setup
 
@@ -26,20 +13,27 @@
 ### Run
 
 ```
-yarn
+yarn # install deps
 ```
 
 ```
-yarn quote  # get quote
-yarn swap   # quote + send tx
+yarn quote          # get quote
+yarn swap           # quote + send tx
 ```
 
-```
-`swap-with-instructions.ts` requests instructions from the JUP api and builds the tx manually.
+`src/swap-with-transaction.ts` requests the tx from the Jup API via `swapPostCompressed`.
+`src/swap-with-instructions.ts` requests the ixs via `swapInstructionsPostCompressed` and builds the tx manually.
 
-yarn quote-ixs                  # get quote
-yarn swap-ixs                   # quote + send tx
 ```
+yarn quote-ixs      # get quote
+yarn swap-ixs       # quote + send tx
+```
+
+### Notes
+
+-   This e2e integration does not require on-chain changes to the Jup program.
+-   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
+-   Future/Optional: `useSharedAccounts` could remove the need for intermediate ATA setup and cleanup.
 
 ### Example tx sigs:
 
