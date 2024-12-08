@@ -1,6 +1,6 @@
 ## Jup Swap with Compressed Tokens - Demo
 
-This is an example using `@lightprotocol/jup-api-adapter`. Jup-api-adapter is a thin wrapper around the Jupiter API adding compressed token support.
+This is an example using `@lightprotocol/jup-api-adapter` - a thin wrapper for the Jupiter API with compressed token support.
 
 For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adapter).
 
@@ -17,7 +17,8 @@ For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adap
 2. Fund `FILE_WALLET` at `SWAP_USER_KEYPAIR_PATH` with small amount of `INPUT_MINT`.
 3. May require large slippage/priority fee to land. you can change configs in src/constants.ts.
 
-### Run
+
+### Usage
 
 ```
 yarn # install deps
@@ -28,13 +29,14 @@ yarn quote          # get quote
 yarn swap           # quote + send tx
 ```
 
-`src/swap-with-transaction.ts` requests the tx from the Jup API via `swapPostCompressed`.
-`src/swap-with-instructions.ts` requests the ixs via `swapInstructionsPostCompressed` and builds the tx manually.
+- `src/swap-with-transaction.ts` requests the tx from the Jup API via `swapPostCompressed`.
+- `src/swap-with-instructions.ts` requests the ixs via `swapInstructionsPostCompressed` and builds the tx manually.
 
 ```
 yarn quote-ixs      # get quote
 yarn swap-ixs       # quote + send tx
 ```
+
 
 ### Notes
 
