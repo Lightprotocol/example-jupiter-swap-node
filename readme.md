@@ -4,13 +4,6 @@ This is an example using `@lightprotocol/jup-api-adapter` - a thin wrapper for t
 
 For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adapter).
 
-### Notes
-
--   This e2e integration does not require on-chain changes to the Jup program.
--   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
--   Future/Optional: `useSharedAccounts` could remove the need for intermediate ATA setup and cleanup.
-
-
 ### Setup
 
 1. Create .env from .env.example
