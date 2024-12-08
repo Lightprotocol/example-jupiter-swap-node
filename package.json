@@ -1,36 +1,37 @@
 {
   "name": "jup-swap",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.1.0",
+  "main": "swap-with-transaction.js",
   "author": "light protocol maintainers",
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@jup-ag/api": "^6.0.30",
-    "@lightprotocol/compressed-token": "^0.15.1",
-    "@lightprotocol/stateless.js": "^0.15.1",
-    "@solana/spl-token": "0.4.0",
-    "@solana/web3.js": "1.95.5",
+    "@lightprotocol/compressed-token": "~0.16.0",
+    "@lightprotocol/jup-api-adapter": "~0.1.5",
+    "@lightprotocol/stateless.js": "~0.16.0",
+    "@solana/spl-token": "0.4.8",
+    "@solana/web3.js": "1.95.3",
     "@types/node": "^22.9.2",
     "bs58": "^6.0.0",
+    "dotenv": "^16.4.5",
     "promise-retry": "^2.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "@solana/spl-token": "0.4.0",
+    "@types/bn.js": "^5.1.6",
     "@types/promise-retry": "^1.1.6",
+    "fastestsmallesttextencoderdecoder": "^1.0.22",
     "prettier": "^3.3.3",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "yarn": "^1.22.22"
   },
   "scripts": {
-    "dev": "NODE_OPTIONS='--no-warnings --no-deprecation' tsx watch src/index.ts",
-    "dryrun": "tsx src/index.ts dryrun true",
-    "dryrun-skip-logs": "tsx src/index.ts dryrun false",
-    "send": "tsx src/index.ts send true",
-    "debug": "NODE_DEBUG=* node --trace-warnings --trace-deprecation --trace-uncaught node_modules/.bin/tsx watch src/index.ts",
+    "quote": "tsx src/swap-with-transaction.ts quote true",
+    "quote-ixs": "tsx src/swap-with-instructions.ts quote true",
+    "swap": "tsx src/swap-with-transaction.ts swap true",
+    "swap-ixs": "tsx src/swap-with-instructions.ts swap true",
     "build": "tsc",
-    "start": "node dist/index.js",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\""
   }
 }

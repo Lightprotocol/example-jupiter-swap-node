@@ -1,23 +1,15 @@
 ## Jup Swap with Compressed Tokens - Demo
 
--   Creates a single swap transaction with [additional instructions](https://github.com/Lightprotocol/example-jupiter-swap-node/blob/main/src/buildCompressedSwapTx.ts#L192-L200):
-    *   `createTokenInAtaIx`,
-    *   `createTokenOutAtaIx`,
-    *   `decompressTokenInIx`,
-    *   `compressTokenOutIx`,
-    *   `closeTokenInAtaIx`,
-    *   `closeTokenOutAtaIx`
--   Accepts compressed tokens as tokenIn, returns tokenOut as SPL or compressed token.
--   Cleans up intermediate ATAs after the swap
+This is an example using `@lightprotocol/jup-api-adapter`. Jup-api-adapter is a thin wrapper around the Jupiter API adding compressed token support.
 
-
-To use the `compressTokenOutIx` feature, checkout [this branch](https://github.com/Lightprotocol/example-jupiter-swap-node/tree/use-compress-out-ata).
+For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adapter).
 
 ### Notes
 
 -   This e2e integration does not require on-chain changes to the Jup program.
 -   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
 -   Future/Optional: `useSharedAccounts` could remove the need for intermediate ATA setup and cleanup.
+
 
 ### Setup
 
@@ -28,20 +20,27 @@ To use the `compressTokenOutIx` feature, checkout [this branch](https://github.c
 ### Run
 
 ```
-yarn
+yarn # install deps
 ```
 
 ```
-# get quotes, see tx size
-yarn quote                          # runs 1 round (default)
-ROUNDS=5 yarn quote                 # runs 5 rounds
+yarn quote          # get quote
+yarn swap           # quote + send tx
 ```
 
+`src/swap-with-transaction.ts` requests the tx from the Jup API via `swapPostCompressed`.
+`src/swap-with-instructions.ts` requests the ixs via `swapInstructionsPostCompressed` and builds the tx manually.
+
 ```
-# also send and confirm
-yarn swap                           # runs 1 round (default)
-ROUNDS=5 yarn swap                  # runs 5 rounds
+yarn quote-ixs      # get quote
+yarn swap-ixs       # quote + send tx
 ```
+
+### Notes
+
+-   This e2e integration does not require on-chain changes to the Jup program.
+-   Demo requires `directSwapsOnly=true` to avoid occasional tx size overruns (+ ~300 bytes overhead). This can be fixed by integrating natively in Jup's API for `setupInstructions` and `cleanupInstructions`.
+-   Future/Optional: `useSharedAccounts` could remove the need for intermediate ATA setup and cleanup.
 
 ### Example tx sigs:
 
@@ -56,4 +55,6 @@ without compressTokenOutIx:
 -   https://solscan.io/tx/5JPv1k9HRqdzie8DcpYFFbwcLmdxYFu9rLpyrFFYii4AE6XPfrk59tgpRasZfykvLn6QgLhzBCKxFvBaNWTYRp4K
 -   https://solscan.io/tx/3KVwEPz1XFxNifz7hptqQWSeM3vgxBDCj2v1SwLMjgRS9iKLi8mEoHzyuvcsAzMjPwLp9c3mizUy5hKYSKXELwuV
 
-No safeguards. Use at your own risk. Set small amounts. ensure your INPUT_MINT tokenBalances are small.
+To use the `compressTokenOutIx` feature, checkout [this branch](https://github.com/Lightprotocol/example-jupiter-swap-node/tree/use-compress-out-ata).
+
+No safeguards. Use at your own risk. Set small amounts. ensure your INPUT_MINT tokenBalances are small. `compressTokenOutIx` instruction interface is not audited.
