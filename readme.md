@@ -51,4 +51,4 @@ without compressTokenOutIx:
 
 To use the `compressTokenOutIx` feature, checkout [this branch](https://github.com/Lightprotocol/example-jupiter-swap-node/tree/use-compress-out-ata).
 
-No safeguards. Use at your own risk. Set small amounts. ensure your INPUT_MINT tokenBalances are small. `compressTokenOutIx` instruction interface is not audited.
+No safeguards. Use at your own risk. Set small amounts. ensure your INPUT_MINT tokenBalances are small.
