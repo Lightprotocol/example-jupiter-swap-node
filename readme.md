@@ -8,7 +8,6 @@ For details, see [jup-api-adapter](https://github.com/Lightprotocol/jup-api-adap
 
 1. Create .env from .env.example
 2. Fund `FILE_WALLET` at `SWAP_USER_KEYPAIR_PATH` with small amount of `INPUT_MINT`.
-3. May require large slippage/priority fee to land. you can change configs in src/constants.ts.
 
 
 ### Usage
